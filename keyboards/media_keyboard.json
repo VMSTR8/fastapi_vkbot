@@ -1,0 +1,41 @@
+{
+  "inline": true,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "open_link",
+          "link": "https://rdwn.ru",
+          "payload": "{\"button\": \"1\"}",
+          "label": "Наш сайт"
+        }
+      },
+      {
+        "action": {
+          "type": "open_link",
+          "link": "https://www.instagram.com/red_dawn_airsoft/",
+          "payload": "{\"button\": \"2\"}",
+          "label": "Instagram"
+        }
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "open_link",
+          "link": "https://www.youtube.com/channel/UC-FcQE2IugvqB2XD305qweg",
+          "payload": "{\"button\": \"3\"}",
+          "label": "YouTube"
+        }
+      },
+      {
+        "action": {
+          "type": "open_link",
+          "link": "https://vk.com/albums-91556912",
+          "payload": "{\"button\": \"4\"}",
+          "label": "Наши фотки"
+        }
+      }
+    ]
+  ]
+}

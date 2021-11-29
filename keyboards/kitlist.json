@@ -1,0 +1,95 @@
+{
+  "inline": true,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"helm\"}",
+          "label": "Защита головы"
+        },
+        "color": "negative"
+      },
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"eye\"}",
+          "label": "Защита глаз"
+        },
+        "color": "negative"
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"balaclava\"}",
+          "label": "Балаклава"
+        },
+        "color": "negative"
+      },
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"combat_shirt\"}",
+          "label": "Боевая рубашка"
+        },
+        "color": "negative"
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"plate\"}",
+          "label": "Бронежилет"
+        },
+        "color": "negative"
+      },
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"levels\"}",
+          "label": "5-ый, 7-ой слой"
+        },
+        "color": "negative"
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"gloves\"}",
+          "label": "Перчатки"
+        },
+        "color": "negative"
+      },
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"pants\"}",
+          "label": "Штаны"
+        },
+        "color": "negative"
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"shoes\"}",
+          "label": "Ботинки"
+        },
+        "color": "negative"
+      },
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"radio\"}",
+          "label": "Радиосвязь"
+        },
+        "color": "negative"
+      }
+    ]
+  ]
+}

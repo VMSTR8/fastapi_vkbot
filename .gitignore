@@ -1,0 +1,12 @@
+# Thrash
+**/__pycache__/
+**/.DS_Store
+.idea/
+
+# venv
+venv/
+
+# Not allowed
+settings.py
+vkparsingapp_sql/vk_parser.py
+answers.py

@@ -1,0 +1,59 @@
+{
+  "inline": true,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"kitlist\"}",
+          "label": "Вопросы по киту"
+        },
+        "color": "positive"
+      },
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"org_questions\"}",
+          "label": "Орг. вопросы"
+        },
+        "color": "positive"
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"media\"}",
+          "label": "Медиа - ресурсы"
+        },
+        "color": "positive"
+      },
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"about_team\"}",
+          "label": "О нашей команде"
+        },
+        "color": "positive"
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"team_bonuses\"}",
+          "label": "Бонусы команды"
+        },
+        "color": "positive"
+      },
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"other_questions\"}",
+          "label": "Другие вопросы"
+        },
+        "color": "positive"
+      }
+    ]
+  ]
+}

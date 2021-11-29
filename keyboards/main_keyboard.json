@@ -1,0 +1,23 @@
+{
+  "one_time": false,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"menu\"}",
+          "label": "Меню"
+        },
+        "color": "positive"
+      },
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"faq\"}",
+          "label": "К.А.В.О."
+        },
+        "color": "primary"
+      }
+    ]
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "inline": true,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"back_button\"}",
+          "label": "Показать категории"
+        },
+        "color": "negative"
+      }
+    ]
+  ]
+}

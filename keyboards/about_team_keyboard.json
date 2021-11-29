@@ -1,0 +1,41 @@
+{
+  "inline": true,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"team_count\"}",
+          "label": "Численность"
+        },
+        "color": "negative"
+      },
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"mid_age\"}",
+          "label": "Средний возраст"
+        },
+        "color": "negative"
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"play\"}",
+          "label": "У кого играем"
+        },
+        "color": "negative"
+      },
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"games\"}",
+          "label": "Посещение игр"
+        },
+        "color": "negative"
+      }
+    ]
+  ]
+}

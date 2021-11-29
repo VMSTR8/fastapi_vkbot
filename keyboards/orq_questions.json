@@ -1,0 +1,41 @@
+{
+  "inline": true,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"games_training\"}",
+          "label": "Игры и трены"
+        },
+        "color": "negative"
+      },
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"no_auto\"}",
+          "label": "Добор без авто"
+        },
+        "color": "negative"
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"relaxing\"}",
+          "label": "Как отдыхаем"
+        },
+        "color": "negative"
+      },
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"novice_help\"}",
+          "label": "Помощь новичкам"
+        },
+        "color": "negative"
+      }
+    ]
+  ]
+}

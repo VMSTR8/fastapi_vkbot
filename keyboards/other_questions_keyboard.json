@@ -1,0 +1,15 @@
+{
+  "inline": true,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"repair\"}",
+          "label": "Ремонт приводов"
+        },
+        "color": "negative"
+      }
+    ]
+  ]
+}

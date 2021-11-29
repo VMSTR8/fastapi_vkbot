@@ -1,0 +1,23 @@
+{
+  "inline": true,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"discount\"}",
+          "label": "Наши скидки"
+        },
+        "color": "negative"
+      },
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"rare\"}",
+          "label": "Редкие ништяки"
+        },
+        "color": "negative"
+      }
+    ]
+  ]
+}

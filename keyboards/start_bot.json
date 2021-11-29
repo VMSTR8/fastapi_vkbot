@@ -1,0 +1,15 @@
+{
+  "inline": true,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"begin\"}",
+          "label": "Начать"
+        },
+        "color": "positive"
+      }
+    ]
+  ]
+}
