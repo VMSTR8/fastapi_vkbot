@@ -1,5 +1,7 @@
 import time
 
+import requests
+
 from vkbot_parser.vk_parser import AlbumsParser
 
 from settings import AUTH_TOKEN
