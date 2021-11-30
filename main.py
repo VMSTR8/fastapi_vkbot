@@ -87,6 +87,11 @@ async def processing(vk: Request):
     return Response(content='ok')
 
 
+@app.get('/', response_class=RedirectResponse, status_code=302)
+def fake_main():
+    return 'https://youtu.be/Q-DXtTDYfg8'
+
+
 @app.post('/add_items')
 def add_item(request: Request, item: schemas.ItemBase, db: Session = Depends(get_db)):
     auth = request.headers.get('auth')
