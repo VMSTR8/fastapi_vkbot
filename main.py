@@ -2,7 +2,7 @@ import sys
 
 from fastapi import FastAPI, Request, Depends, HTTPException
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from starlette.responses import Response
+from starlette.responses import Response, RedirectResponse
 
 from sqlalchemy.orm import Session
 
@@ -96,3 +96,8 @@ def add_item(request: Request, item: schemas.ItemBase, db: Session = Depends(get
     if db_item:
         raise HTTPException(status_code=400, detail='Item link already exists')
     return crud.create_item(db=db, item=item)
+
+
+@app.get('/add_items', response_class=RedirectResponse, status_code=302)
+def add_item():
+    return 'https://youtu.be/g4x-l5-iVN8'
