@@ -8,5 +8,12 @@ venv/
 
 # Not allowed
 settings.py
-vkparsingapp_sql/vk_parser.py
 answers.py
+pgdata
+
+# databases
+**.db
+**.sqlite3
+
+# docker
+**.yml
