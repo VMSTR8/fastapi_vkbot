@@ -1,5 +1,7 @@
 import json
 
+from vkbot_sql.crud import get_answer
+
 from answers import *
 
 with open('./keyboards/start_bot.json', 'r', encoding='utf-8') as start_bot, \
@@ -34,9 +36,9 @@ button = {
     '6': [FAQ_6],
     '7': [FAQ_7],
     '8': [FAQ_8],
-    'Начать': [HELLO_MESSAGE, mk],
-    'Меню': [MENU, st],
-    'К.А.В.О.': [FAQ, fq],
+    'Начать': [get_answer('HELLO_MESSAGE'), mk],
+    'Меню': [get_answer('MENU'), st],
+    'К.А.В.О.': [get_answer('FAQ'), fq],
     'Вопросы по киту': [KITLIST_MESSAGE, kitlist_q],
     'Защита головы': [HELMET, ck],
     'Защита глаз': [EYE_PROTECTION, ck],
