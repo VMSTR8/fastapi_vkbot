@@ -1,8 +1,10 @@
 import sys
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, HTTPException
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import Response
+
+from sqlalchemy.orm import Session
 
 from vk.exceptions import VkAPIError
 
@@ -10,8 +12,9 @@ from buttons import button
 from vkapi import is_member, keyboard_button, check_type, instant_message_delete
 from settings import CONFIRMATION_TOKEN, OPEN_GROUP_TOKEN, CLOSED_GROUP_TOKEN, ADMINISTRATORS, TEAM_ONLY_ANSWERS
 
-from vkparsingapp_sql import cruds, models, schemas
-from vkparsingapp_sql.database import SessionLocal, engine
+from vkbot_sql import crud, models, schemas
+from vkbot_sql.database import engine
+from get_db import get_db
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -19,15 +22,6 @@ app = FastAPI()
 app.add_middleware(
     TrustedHostMiddleware, allowed_hosts=["*"]
 )
-
-
-# dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @app.post('/')
@@ -90,3 +84,11 @@ async def processing(vk: Request):
                 print(err_msg, file=sys.stderr)
 
     return Response(content='ok')
+
+
+@app.post('/add_items/', response_model=schemas.ItemBase)
+def add_item(item: schemas.ItemBase, db: Session = Depends(get_db)):
+    db_item = crud.get_item_by_link(db, link=item.link)
+    if db_item:
+        raise HTTPException(status_code=400, detail='Item link already exists')
+    return crud.create_item(db=db, item=item)
