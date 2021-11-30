@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, validator, HttpUrl
 
@@ -14,3 +14,16 @@ class ItemBase(BaseModel):
     def text_validator(cls, v):
         assert len(v) > 0, "Text field can't be empty"
         return v
+
+
+class ItemCreate(BaseModel):
+    data: List[ItemBase]
+
+
+class AnswerBase(BaseModel):
+    key: str
+    answer: str
+
+    class Config:
+        orm_mode = True
+
