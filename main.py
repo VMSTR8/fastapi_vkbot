@@ -87,8 +87,11 @@ async def processing(vk: Request):
     return Response(content='ok')
 
 
-@app.post('/add_items/', response_model=schemas.ItemBase)
-def add_item(item: schemas.ItemBase, db: Session = Depends(get_db)):
+@app.post('/add_items')
+def add_item(request: Request, item: schemas.ItemBase, db: Session = Depends(get_db)):
+    auth = request.headers.get('auth')
+    if not auth or auth != AUTH_TOKEN:
+        return HTTPException(status_code=401, detail='Access denied')
     db_item = crud.get_item_by_link(db, link=item.link)
     if db_item:
         raise HTTPException(status_code=400, detail='Item link already exists')
