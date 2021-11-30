@@ -10,7 +10,8 @@ from vk.exceptions import VkAPIError
 
 from buttons import button
 from vkapi import is_member, keyboard_button, check_type, instant_message_delete
-from settings import CONFIRMATION_TOKEN, OPEN_GROUP_TOKEN, CLOSED_GROUP_TOKEN, ADMINISTRATORS, TEAM_ONLY_ANSWERS
+from settings import CONFIRMATION_TOKEN, OPEN_GROUP_TOKEN, CLOSED_GROUP_TOKEN, ADMINISTRATORS, TEAM_ONLY_ANSWERS, \
+    AUTH_TOKEN
 
 from vkbot_sql import crud, models, schemas
 from vkbot_sql.database import engine
