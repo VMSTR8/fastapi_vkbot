@@ -25,6 +25,8 @@ app.add_middleware(
     TrustedHostMiddleware, allowed_hosts=["*"]
 )
 
+users_requests = {}
+
 
 @app.post('/')
 async def processing(vk: Request):
