@@ -1,4 +1,5 @@
 import sys
+from typing import Optional
 
 from fastapi import FastAPI, Request, Depends, HTTPException
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -9,7 +10,7 @@ from sqlalchemy.orm import Session
 from vk.exceptions import VkAPIError
 
 from buttons import button
-from vkapi import is_member, keyboard_button, check_type, instant_message_delete
+from vkapi import is_member, keyboard_button, check_type, instant_message_delete, send_message, search_handler
 from settings import CONFIRMATION_TOKEN, OPEN_GROUP_TOKEN, CLOSED_GROUP_TOKEN, ADMINISTRATORS, TEAM_ONLY_ANSWERS, \
     AUTH_TOKEN
 
@@ -39,12 +40,50 @@ async def processing(vk: Request):
         user_id = data['object']['message']['from_id']  # get user ID from message
         peer_id = data['object']['message']['peer_id']  # get peer ID from message
         membership = await is_member(CLOSED_GROUP_TOKEN, '159016402', user_id)
+        message = text.split(' ', 1)[-1]
 
         # working with chat bot out of chats
         if user_id == peer_id:
 
+            # bots search
+            # DONE если вбить слово поиск, то он начнет искать по слову поиск -- исправить
+            # TODO добавить кнопку "показать еще"
+            # TODO рефакторинг когда, переписать в функции то, что можно переписать
+            # TODO не забывать про ограничения 4096 символов от вк, обработать это как то покраше
+            # TODO создать базу пользователей и запросов пользователей
+
+            if message != 'поиск' and text.lower().startswith('поиск'):
+
+                if not users_requests.get(user_id):
+
+                    users_requests[user_id] = {}
+                    users_requests[user_id][message] = 0
+                    offset = users_requests[user_id][message]
+
+                    try:
+                        await send_message(OPEN_GROUP_TOKEN, user_id, search_handler(message=message, offset=offset))
+                        users_requests[user_id][message] += 3
+                    except VkAPIError as err:
+                        print(err)
+                        await send_message(OPEN_GROUP_TOKEN, user_id, "Нечего показывать")
+
+                else:
+                    try:
+                        offset = users_requests[user_id][message]
+                    except KeyError as err:
+                        print(err)
+                        users_requests[user_id][message] = 0
+                        offset = users_requests[user_id][message]
+                    try:
+                        await send_message(OPEN_GROUP_TOKEN, user_id, search_handler(message=message, offset=offset))
+                        users_requests[user_id][message] += 3
+                    except VkAPIError as err:
+                        print(err)
+                        await send_message(OPEN_GROUP_TOKEN, user_id, "Больше нечего показывать")
+                        users_requests[user_id][message] = 0
+
             # simple check, what user do: sending text, sending attachments or pushing the buttons
-            if 'payload' in data['object']['message']:
+            elif 'payload' in data['object']['message']:
                 try:
                     if text.lower() in TEAM_ONLY_ANSWERS and membership:
                         if text.lower() in TEAM_ONLY_ANSWERS[1].lower():
@@ -92,7 +131,7 @@ def fake_main():
     return 'https://youtu.be/Q-DXtTDYfg8'
 
 
-@app.post('/add_items')
+@app.post('/add_items/')
 def add_item(request: Request, item: schemas.ItemBase, db: Session = Depends(get_db)):
     auth = request.headers.get('auth')
     if not auth or auth != AUTH_TOKEN:
@@ -103,6 +142,12 @@ def add_item(request: Request, item: schemas.ItemBase, db: Session = Depends(get
     return crud.create_item(db=db, item=item)
 
 
-@app.get('/add_items', response_class=RedirectResponse, status_code=302)
+@app.get('/add_items/', response_class=RedirectResponse, status_code=302)
 def add_item():
     return 'https://youtu.be/g4x-l5-iVN8'
+
+
+@app.get('/a_nu_davai/')
+def search(query: Optional[str] = None, db: Session = Depends(get_db)):
+    job = crud.search_db(query, db=db)
+    return job
