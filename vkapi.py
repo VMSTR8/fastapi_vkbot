@@ -2,6 +2,9 @@ import random
 
 import vk
 
+from vkbot_sql.crud import search_db
+from get_db import get_db
+
 session = vk.Session()
 api = vk.API(session, v='5.131')
 
@@ -40,3 +43,8 @@ async def is_member(access_token, group_id, user_id):
     return api.groups.isMember(access_token=access_token,
                                group_id=group_id,
                                user_id=user_id)
+
+
+def search_handler(message, offset):
+    job = search_db(query=message, db=next(get_db()))[offset:offset + 3]
+    return "\n".join([f"{i[0][:1000]}\n\nСсылка: {i[1]}\n{'=' * 15}\n" for i in job])
