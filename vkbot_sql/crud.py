@@ -30,3 +30,10 @@ def get_answers(db: Session, skip: int = 0, limit: int = 100):
 
 def get_answer(key: str):
     return next(get_db()).query(models.Answers).filter(models.Answers.key == key).first().answer
+
+
+def search_db(query: str, db: Session):
+    results = db.query(models.Items)\
+        .with_entities(models.Items.text, models.Items.link)\
+        .filter(models.Items.text.ilike(f'%{query}%')).all()
+    return results
