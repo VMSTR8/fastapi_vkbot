@@ -64,7 +64,7 @@ class AlbumsParser(VKParser):
                 data = response.json()
                 for item in data.get('response').get('items'):
                     link = f"https://vk.com/photo{self.group_id.get(group_name)}_{item.get('id')}"
-                    text = item.get('text').lower()
+                    text = item.get('text')
                     photos_list[item.get('id')] = {'link': link, 'text': text, 'comments': []}
                 self.offset += 100
                 sleep(0.1)
@@ -96,7 +96,7 @@ class AlbumsParser(VKParser):
                                         }, proxies=self.proxy)
                 data = response.json()
                 for item in data.get('response').get('items'):
-                    text = item.get('text').lower()
+                    text = item.get('text')
                     all_photos[item.get('pid')]['comments'].append(text)
                 self.offset += 100
                 sleep(0.1)
