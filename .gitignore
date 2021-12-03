@@ -10,6 +10,8 @@ venv/
 settings.py
 answers.py
 pgdata
+migrations
+alembic.ini
 
 # databases
 **.db
