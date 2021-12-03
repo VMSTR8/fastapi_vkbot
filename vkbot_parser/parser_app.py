@@ -15,7 +15,6 @@ if __name__ == '__main__':
 
     write_to_db = []
     # TODO удаление из базы
-    # TODO селект из базы чтобы показывать боту при запросе пользователем той или иной хуйни
     for value in photos_and_comments.values():
         link = value['link']
         if value['text'] != '':
