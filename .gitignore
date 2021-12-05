@@ -6,8 +6,7 @@
 # venv
 venv/
 
-# Not allowed
-settings.py
+# not allowed
 answers.py
 pgdata
 migrations
@@ -19,3 +18,6 @@ alembic.ini
 
 # docker
 **.yml
+
+# env var
+.env
