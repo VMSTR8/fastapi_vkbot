@@ -19,7 +19,8 @@ async def send_message(access_token, user_id, message, attachment=''):
                       user_id=str(user_id),
                       message=message,
                       attachment=attachment,
-                      random_id=random.getrandbits(64))
+                      random_id=random.getrandbits(64),
+                      dont_parse_links=1)
 
 
 async def keyboard_button(access_token, user_id, json, request, message, keyboard='', attachment=''):
@@ -28,8 +29,9 @@ async def keyboard_button(access_token, user_id, json, request, message, keyboar
                           user_id=str(user_id),
                           message=message,
                           keyboard=keyboard,
+                          attachment=attachment,
                           random_id=random.getrandbits(64),
-                          attachment=attachment)
+                          dont_parse_links=1)
 
 
 async def instant_message_delete(access_token, peer_id, conversation_message_ids=list):
@@ -47,4 +49,4 @@ async def is_member(access_token, group_id, user_id):
 
 def search_handler(message, offset):
     job = search_db(query=message, db=next(get_db()))[offset:offset + 3]
-    return "\n".join([f"{i[0][:1000]}\n\nСсылка: {i[1]}\n{'=' * 15}\n" for i in job])
+    return '\n'.join([f'{i[0][:1000]}\n\nСсылка: {i[1]}\n{"=" * 15}\n' for i in job])
