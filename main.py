@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from vk.exceptions import VkAPIError
 
-from buttons import button
+from buttons import button, show_more
 from vkapi import is_member, keyboard_button, check_type, instant_message_delete, send_message, search_handler
 from settings import CONFIRMATION_TOKEN, OPEN_GROUP_TOKEN, CLOSED_GROUP_TOKEN, ADMINISTRATORS, TEAM_ONLY_ANSWERS, \
     AUTH_TOKEN
@@ -25,7 +25,7 @@ app.add_middleware(
     TrustedHostMiddleware, allowed_hosts=["*"]
 )
 
-users_requests = {}
+users_of_search = {}
 
 
 @app.post('/')
@@ -49,43 +49,39 @@ async def processing(vk: Request):
 
             # bots search
             # DONE если вбить слово поиск, то он начнет искать по слову поиск -- исправить
-            # TODO добавить кнопку "показать еще"
+            # DONE добавить кнопку "показать еще"
             # TODO рефакторинг когда, переписать в функции то, что можно переписать
             # TODO не забывать про ограничения 4096 символов от вк, обработать это как то покраше
             # TODO создать базу пользователей и запросов пользователей
 
-            if message != 'поиск' and text.lower().startswith('поиск'):
+            if message.lower() != 'поиск' and text.lower().startswith('поиск'):
+                if crud.search_db(message, next(get_db())):  # если в базе есть запись
+                    if not users_of_search.get(user_id):  # если пользователь еще не делал никаких запросов
 
-                if not users_requests.get(user_id):
-
-                    users_requests[user_id] = {}
-                    users_requests[user_id][message] = 0
-                    offset = users_requests[user_id][message]
-
-                    try:
-                        await send_message(OPEN_GROUP_TOKEN, user_id, search_handler(message=message, offset=offset))
-                        users_requests[user_id][message] += 3
-                    except VkAPIError as err:
-                        print(err)
-                        await send_message(OPEN_GROUP_TOKEN, user_id, "Нечего показывать")
-
+                        users_of_search[user_id] = {}
+                        users_of_search[user_id]['result'] = iter(crud.search_db(message, next(get_db())))
+                        try:
+                            await send_message(OPEN_GROUP_TOKEN, user_id, next(users_of_search[user_id]['result']), keyboard=show_more)
+                        except Exception as err:
+                            await send_message(OPEN_GROUP_TOKEN, user_id, 'Ничего не найдено')
+                    else:
+                        users_of_search[user_id]['result'] = iter(crud.search_db(message, next(get_db())))
+                        try:
+                            await send_message(OPEN_GROUP_TOKEN, user_id, next(users_of_search[user_id]['result']), keyboard=show_more)
+                        except Exception as err:
+                            await send_message(OPEN_GROUP_TOKEN, user_id, 'Ничего не найдено')
                 else:
-                    try:
-                        offset = users_requests[user_id][message]
-                    except KeyError as err:
-                        print(err)
-                        users_requests[user_id][message] = 0
-                        offset = users_requests[user_id][message]
-                    try:
-                        await send_message(OPEN_GROUP_TOKEN, user_id, search_handler(message=message, offset=offset))
-                        users_requests[user_id][message] += 3
-                    except VkAPIError as err:
-                        print(err)
-                        await send_message(OPEN_GROUP_TOKEN, user_id, "Больше нечего показывать")
-                        users_requests[user_id][message] = 0
+                    await send_message(OPEN_GROUP_TOKEN, user_id, 'Ничего не найдено')
+                    users_of_search[user_id]['result'] = None
 
             # simple check, what user do: sending text, sending attachments or pushing the buttons
             elif 'payload' in data['object']['message']:
+                if text == 'Показать еще':
+                    try:
+                        await send_message(OPEN_GROUP_TOKEN, user_id, next(users_of_search[user_id]['result']), keyboard=show_more)
+                    except Exception as err:
+                        await send_message(OPEN_GROUP_TOKEN, user_id, 'Больше результатов нет, начните поиск заново')
+
                 try:
                     if text.lower() in TEAM_ONLY_ANSWERS and membership:
                         if text.lower() in TEAM_ONLY_ANSWERS[1].lower():
@@ -96,7 +92,11 @@ async def processing(vk: Request):
                     elif text.lower() in TEAM_ONLY_ANSWERS and not membership:
                         await keyboard_button(OPEN_GROUP_TOKEN, user_id, data, text, button[text][1])
                     else:
-                        await keyboard_button(OPEN_GROUP_TOKEN, user_id, data, text, button[text][0], button[text][1])
+                        try:
+                            await keyboard_button(OPEN_GROUP_TOKEN, user_id, data, text,
+                                                  button[text][0], button[text][1])
+                        except KeyError as err:
+                            print(f'{err} - Кнопка не была добавлена!')
                 except IndexError:
                     await keyboard_button(OPEN_GROUP_TOKEN, user_id, data, text, button[text][0])
 
