@@ -14,11 +14,12 @@ async def check_type(text, json):
         return True
 
 
-async def send_message(access_token, user_id, message, attachment=''):
+async def send_message(access_token, user_id, message, attachment='', keyboard=''):
     api.messages.send(access_token=access_token,
                       user_id=str(user_id),
                       message=message,
                       attachment=attachment,
+                      keyboard=keyboard,
                       random_id=random.getrandbits(64),
                       dont_parse_links=1)
 
@@ -48,5 +49,5 @@ async def is_member(access_token, group_id, user_id):
 
 
 def search_handler(message, offset):
-    job = search_db(query=message, db=next(get_db()))[offset:offset + 3]
-    return '\n'.join([f'{i[0][:1000]}\n\nСсылка: {i[1]}\n{"=" * 15}\n' for i in job])
+    job = search_db(query=message, db=next(get_db()))[offset:offset + 1]
+    return '\n'.join([f'{i[0][:4000]}\n\nСсылка: {i[1]}\n{"=" * 15}\n' for i in job])
