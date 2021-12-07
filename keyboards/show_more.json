@@ -1,0 +1,15 @@
+{
+  "inline": true,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"show_more\"}",
+          "label": "Показать еще"
+        },
+        "color": "negative"
+      }
+    ]
+  ]
+}
