@@ -1,5 +1,4 @@
 import sys
-from typing import Optional
 
 from fastapi import FastAPI, Request, Depends, HTTPException
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -47,41 +46,49 @@ async def processing(vk: Request):
         # working with chat bot out of chats
         if user_id == peer_id:
 
-            # bots search
+            # function of searching for goods in the database
             # DONE если вбить слово поиск, то он начнет искать по слову поиск -- исправить
             # DONE добавить кнопку "показать еще"
             # TODO рефакторинг когда, переписать в функции то, что можно переписать
-            # TODO не забывать про ограничения 4096 символов от вк, обработать это как то покраше
-            # TODO создать базу пользователей и запросов пользователей
+            # DONE не забывать про ограничения 4096 символов от вк, обработать это как то покраше
 
             if message.lower() != 'поиск' and text.lower().startswith('поиск'):
-                if crud.search_db(message, next(get_db())):  # если в базе есть запись
-                    if not users_of_search.get(user_id):  # если пользователь еще не делал никаких запросов
+                if crud.search_db(message, next(get_db())):  # if object exist in database
+                    if not users_of_search.get(user_id):  # if user not exist in dictionary
 
                         users_of_search[user_id] = {}
                         users_of_search[user_id]['result'] = iter(crud.search_db(message, next(get_db())))
                         try:
-                            await send_message(OPEN_GROUP_TOKEN, user_id, next(users_of_search[user_id]['result']), keyboard=show_more)
+                            await send_message(OPEN_GROUP_TOKEN, user_id, next(users_of_search[user_id]['result']),
+                                               keyboard=show_more)
                         except Exception as err:
-                            await send_message(OPEN_GROUP_TOKEN, user_id, 'Ничего не найдено')
-                    else:
+                            print(f'Ошибка в блоке user not exist - {err}')
+                            await send_message(OPEN_GROUP_TOKEN, user_id, 'Что-то пошло не так или ничего не найдено, '
+                                                                          'попробуйте поискать еще раз.')
+                    else:  # if user exist in dictionary
                         users_of_search[user_id]['result'] = iter(crud.search_db(message, next(get_db())))
                         try:
-                            await send_message(OPEN_GROUP_TOKEN, user_id, next(users_of_search[user_id]['result']), keyboard=show_more)
+                            await send_message(OPEN_GROUP_TOKEN, user_id, next(users_of_search[user_id]['result']),
+                                               keyboard=show_more)
                         except Exception as err:
-                            await send_message(OPEN_GROUP_TOKEN, user_id, 'Ничего не найдено')
-                else:
-                    await send_message(OPEN_GROUP_TOKEN, user_id, 'Ничего не найдено')
-                    users_of_search[user_id]['result'] = None
+                            print(f'Ошибка в блоке user exist - {err}')
+                            await send_message(OPEN_GROUP_TOKEN, user_id, 'Что-то пошло не так или ничего не найдено, '
+                                                                          'попробуйте поискать еще раз.')
+                else:  # if object not exist in database
+                    await send_message(OPEN_GROUP_TOKEN, user_id, 'Ничего не найдено, '
+                                                                  'попробуйте другой поисковой запрос.')
 
             # simple check, what user do: sending text, sending attachments or pushing the buttons
             elif 'payload' in data['object']['message']:
-                if text == 'Показать еще':
+                if text == 'Показать еще':  # check for payload button while searching
                     try:
-                        await send_message(OPEN_GROUP_TOKEN, user_id, next(users_of_search[user_id]['result']), keyboard=show_more)
+                        await send_message(OPEN_GROUP_TOKEN, user_id, next(users_of_search[user_id]['result']),
+                                           keyboard=show_more)
                     except Exception as err:
-                        await send_message(OPEN_GROUP_TOKEN, user_id, 'Больше результатов нет, начните поиск заново')
+                        print(f'Все просмотрено, поэтому выдана ошибка - {err}')
+                        await send_message(OPEN_GROUP_TOKEN, user_id, 'Больше результатов нет, начните поиск заново.')
 
+                # below is the main functionality of the bot
                 try:
                     if text.lower() in TEAM_ONLY_ANSWERS and membership:
                         if text.lower() in TEAM_ONLY_ANSWERS[1].lower():
@@ -147,9 +154,3 @@ def add_item(request: Request, item: schemas.ItemBase, db: Session = Depends(get
 @app.get('/add_items/', response_class=RedirectResponse, status_code=302)
 def add_item():
     return 'https://youtu.be/g4x-l5-iVN8'
-
-
-@app.get('/a_nu_davai/')
-def search(query: Optional[str] = None, db: Session = Depends(get_db)):
-    job = crud.search_db(query, db=db)
-    return job
