@@ -20,6 +20,11 @@ def create_item(db: Session, item: schemas.ItemBase):
     return db_item
 
 
+def delete_all_items(db: Session):
+    db.query(models.Items).delete()
+    db.commit()
+
+
 def get_answer_by_key(db: Session, answer_key: str):
     return db.query(models.Answers).filter(models.Answers.key == answer_key).first()
 
@@ -33,7 +38,8 @@ def get_answer(key: str):
 
 
 def search_db(query: str, db: Session):
-    results = db.query(models.Items)\
-        .with_entities(models.Items.text, models.Items.link)\
-        .filter(models.Items.text.ilike(f'%{query}%')).all()
+    results = db.query(models.Items).filter(
+        models.Items.__ts_vector__.match(query)).order_by(
+        models.Items.__ts_vector__.desc()).all()
+    results = [(i.text, i.link) for i in results]
     return results
