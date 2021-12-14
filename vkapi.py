@@ -2,9 +2,6 @@ import random
 
 import vk
 
-from vkbot_sql.crud import search_db
-from get_db import get_db
-
 session = vk.Session()
 api = vk.API(session, v='5.131')
 
@@ -22,6 +19,16 @@ async def send_message(access_token, user_id, message, attachment='', keyboard='
                       keyboard=keyboard,
                       random_id=random.getrandbits(64),
                       dont_parse_links=1)
+
+
+async def send_search_result(access_token, user_id, message, attachment='', keyboard=''):
+    api.messages.send(access_token=access_token,
+                      user_id=str(user_id),
+                      message=message,
+                      attachment=attachment,
+                      keyboard=keyboard,
+                      random_id=random.getrandbits(64),
+                      dont_parse_links=0)
 
 
 async def keyboard_button(access_token, user_id, json, request, message, keyboard='', attachment=''):
@@ -48,6 +55,7 @@ async def is_member(access_token, group_id, user_id):
                                user_id=user_id)
 
 
-def search_handler(message, offset):
-    job = search_db(query=message, db=next(get_db()))[offset:offset + 1]
-    return '\n'.join([f'{i[0][:4000]}\n\nСсылка: {i[1]}\n{"=" * 15}\n' for i in job])
+# функция не используется, оставлена на всякий случай
+# def search_handler(message, offset):
+#     job = search_db(query=message, db=next(get_db()))[offset:offset + 1]
+#     return '\n'.join([f'{i[0][:4000]}\n\nСсылка: {i[1]}\n{"=" * 15}\n' for i in job])
