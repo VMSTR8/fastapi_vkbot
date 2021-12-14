@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from vk.exceptions import VkAPIError
 
 from buttons import button, show_more
-from vkapi import is_member, keyboard_button, check_type, instant_message_delete, send_message, search_handler
+from vkapi import is_member, keyboard_button, check_type, instant_message_delete, send_message, send_search_result
 from settings import CONFIRMATION_TOKEN, OPEN_GROUP_TOKEN, CLOSED_GROUP_TOKEN, ADMINISTRATORS, TEAM_ONLY_ANSWERS, \
     AUTH_TOKEN
 
@@ -42,15 +42,12 @@ async def processing(vk: Request):
         peer_id = data['object']['message']['peer_id']  # get peer ID from message
         membership = await is_member(CLOSED_GROUP_TOKEN, '159016402', user_id)
         message = text.split(' ', 1)[-1]
+        message = '&'.join(message.split())
 
         # working with chat bot out of chats
         if user_id == peer_id:
 
             # function of searching for goods in the database
-            # DONE если вбить слово поиск, то он начнет искать по слову поиск -- исправить
-            # DONE добавить кнопку "показать еще"
-            # TODO рефакторинг когда, переписать в функции то, что можно переписать
-            # DONE не забывать про ограничения 4096 символов от вк, обработать это как то покраше
 
             if message.lower() != 'поиск' and text.lower().startswith('поиск'):
                 if crud.search_db(message, next(get_db())):  # if object exist in database
@@ -59,19 +56,23 @@ async def processing(vk: Request):
                         users_of_search[user_id] = {}
                         users_of_search[user_id]['result'] = iter(crud.search_db(message, next(get_db())))
                         try:
-                            await send_message(OPEN_GROUP_TOKEN, user_id, next(users_of_search[user_id]['result']),
-                                               keyboard=show_more)
+                            result = next(users_of_search[user_id]['result'])
+                            await send_search_result(OPEN_GROUP_TOKEN, user_id,
+                                                     f"Сдержание объявления:\n\n{result[0][:4000]}\n\n"
+                                                     f"Ссылка: {result[1]}", keyboard=show_more)
                         except Exception as err:
-                            print(f'Ошибка в блоке user not exist - {err}')
+                            print(f'Ошибка в блоке user not exist: {err}')
                             await send_message(OPEN_GROUP_TOKEN, user_id, 'Что-то пошло не так или ничего не найдено, '
                                                                           'попробуйте поискать еще раз.')
                     else:  # if user exist in dictionary
                         users_of_search[user_id]['result'] = iter(crud.search_db(message, next(get_db())))
                         try:
-                            await send_message(OPEN_GROUP_TOKEN, user_id, next(users_of_search[user_id]['result']),
-                                               keyboard=show_more)
+                            result = next(users_of_search[user_id]['result'])
+                            await send_search_result(OPEN_GROUP_TOKEN, user_id,
+                                                     f"Сдержание объявления:\n\n{result[0][:4000]}\n\n"
+                                                     f"Ссылка: {result[1]}", keyboard=show_more)
                         except Exception as err:
-                            print(f'Ошибка в блоке user exist - {err}')
+                            print(f'Ошибка в блоке user exist: {err}')
                             await send_message(OPEN_GROUP_TOKEN, user_id, 'Что-то пошло не так или ничего не найдено, '
                                                                           'попробуйте поискать еще раз.')
                 else:  # if object not exist in database
@@ -82,30 +83,29 @@ async def processing(vk: Request):
             elif 'payload' in data['object']['message']:
                 if text == 'Показать еще':  # check for payload button while searching
                     try:
-                        await send_message(OPEN_GROUP_TOKEN, user_id, next(users_of_search[user_id]['result']),
-                                           keyboard=show_more)
+                        result = next(users_of_search[user_id]['result'])
+                        await send_search_result(OPEN_GROUP_TOKEN, user_id,
+                                                 f"Сдержание объявления:\n\n{result[0][:4000]}\n\n"
+                                                 f"Ссылка: {result[1]}", keyboard=show_more)
                     except Exception as err:
-                        print(f'Все просмотрено, поэтому выдана ошибка - {err}')
+                        print(f'Все просмотрено, поэтому выдана ошибка: {err}')
                         await send_message(OPEN_GROUP_TOKEN, user_id, 'Больше результатов нет, начните поиск заново.')
-
-                # below is the main functionality of the bot
-                try:
-                    if text.lower() in TEAM_ONLY_ANSWERS and membership:
-                        if text.lower() in TEAM_ONLY_ANSWERS[1].lower():
-                            await keyboard_button(OPEN_GROUP_TOKEN, user_id, data, text, button[text][0],
-                                                  attachment='doc-159016402_583562872')
+                else:
+                    # below is the main functionality of the bot
+                    try:
+                        if text.lower() in TEAM_ONLY_ANSWERS and membership:
+                            if text.lower() in TEAM_ONLY_ANSWERS[1].lower():
+                                await keyboard_button(OPEN_GROUP_TOKEN, user_id, data, text, button[text][0],
+                                                      attachment='doc-159016402_583562872')
+                            else:
+                                await keyboard_button(OPEN_GROUP_TOKEN, user_id, data, text, button[text][0])
+                        elif text.lower() in TEAM_ONLY_ANSWERS and not membership:
+                            await keyboard_button(OPEN_GROUP_TOKEN, user_id, data, text, button[text][1])
                         else:
-                            await keyboard_button(OPEN_GROUP_TOKEN, user_id, data, text, button[text][0])
-                    elif text.lower() in TEAM_ONLY_ANSWERS and not membership:
-                        await keyboard_button(OPEN_GROUP_TOKEN, user_id, data, text, button[text][1])
-                    else:
-                        try:
                             await keyboard_button(OPEN_GROUP_TOKEN, user_id, data, text,
                                                   button[text][0], button[text][1])
-                        except KeyError as err:
-                            print(f'{err} - Кнопка не была добавлена!')
-                except IndexError:
-                    await keyboard_button(OPEN_GROUP_TOKEN, user_id, data, text, button[text][0])
+                    except IndexError:
+                        await keyboard_button(OPEN_GROUP_TOKEN, user_id, data, text, button[text][0])
 
             # if user send to bot his geolocation, bot will understand that and answer to user with the joke
             elif 'geo' in data['object']['message'].keys():
