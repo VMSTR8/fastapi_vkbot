@@ -21,9 +21,6 @@ SERVICE_TOKEN = os.environ.get('SERVICE_TOKEN')
 PERSONAL_TOKEN = os.environ.get('PERSONAL_TOKEN')
 VERSION = 5.131
 
-HTTP_PROXY = os.environ.get('HTTP_PROXY')
-HTTPS_PROXY = os.environ.get('HTTPS_PROXY')
-
 # айдишники администраторов чатов в VK
 ADMINISTRATORS = [8818396, 5244683, 3781646, 16153880]
 
