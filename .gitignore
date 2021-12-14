@@ -10,8 +10,7 @@ venv/
 test.py
 answers.py
 pgdata
-migrations
-alembic.ini
+migrations/versions
 
 # databases
 **.db
