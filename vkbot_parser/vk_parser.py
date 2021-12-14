@@ -2,7 +2,7 @@ from time import sleep
 
 import requests
 
-from settings import SERVICE_TOKEN, PERSONAL_TOKEN, VERSION, GROUP_IDS, RESTRICTED, HTTP_PROXY, HTTPS_PROXY
+from settings import SERVICE_TOKEN, PERSONAL_TOKEN, VERSION, GROUP_IDS, RESTRICTED
 
 
 class VKParser:
@@ -17,7 +17,7 @@ class VKParser:
 
         self.api_url = 'https://api.vk.com/method/'
         self.methods = dict(photos='photos.get?', albums='photos.getAlbums?', comments='photos.getAllComments?')
-        self.proxy = dict(http=HTTP_PROXY, https=HTTPS_PROXY)
+        # self.proxy = dict(http=HTTP_PROXY, https=HTTPS_PROXY)  # прокси не нужны, поэтому отключили
         self.offset = 0
 
 
@@ -35,7 +35,7 @@ class AlbumsParser(VKParser):
                                     'access_token': self.personal_token,
                                     'v': VERSION,
                                     'owner_id': self.group_id.get(group_name, None)
-                                }, proxies=self.proxy)
+                                })
         data = response.json()
         return [item.get('id') for item in data.get('response').get('items')
                 if 'продажа' in str(item.get('title').lower())  # TODO переписать так, чтобы не было "продажа"
@@ -60,7 +60,7 @@ class AlbumsParser(VKParser):
                                             'album_id': album,
                                             'offset': self.offset,
                                             'count': 1000
-                                        }, proxies=self.proxy)
+                                        })
                 data = response.json()
                 for item in data.get('response').get('items'):
                     link = f"https://vk.com/photo{self.group_id.get(group_name)}_{item.get('id')}"
@@ -93,7 +93,7 @@ class AlbumsParser(VKParser):
                                             'album_id': album,
                                             'offset': self.offset,
                                             'count': 100
-                                        }, proxies=self.proxy)
+                                        })
                 data = response.json()
                 for item in data.get('response').get('items'):
                     text = item.get('text')
