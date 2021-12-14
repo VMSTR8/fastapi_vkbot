@@ -18,6 +18,16 @@
         },
         "color": "primary"
       }
+    ],
+    [
+      {
+      "action": {
+      "type": "open_link",
+      "link": "https://forms.gle/EwqUk6PNtjpVgeTUA",
+      "payload": "{\"button\": \"google\"}",
+      "label": "Предложения и пожелания"
+        }
+      }
     ]
   ]
 }
