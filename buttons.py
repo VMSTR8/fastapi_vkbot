@@ -42,6 +42,7 @@ button = {
     'Начать': [get_answer('HELLO_MESSAGE'), main],
     'Меню': [get_answer('MENU'), menu],
     'К.А.В.О.': [get_answer('FAQ'), faq],
+    'Как использовать поиск': [get_answer('SEARCH')],
     'Вопросы по киту': [get_answer('KITLIST_MESSAGE'), loadout],
     'Защита головы': [get_answer('HELMET'), categories],
     'Защита глаз': [get_answer('EYE_PROTECTION'), categories],
