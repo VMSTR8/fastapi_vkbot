@@ -21,11 +21,21 @@
     ],
     [
       {
+        "action": {
+          "type": "text",
+          "payload": "{\"button\": \"botsearch\"}",
+          "label": "Как использовать поиск"
+        },
+        "color": "negative"
+      }
+    ],
+    [
+      {
       "action": {
-      "type": "open_link",
-      "link": "https://forms.gle/EwqUk6PNtjpVgeTUA",
-      "payload": "{\"button\": \"google\"}",
-      "label": "Предложения и пожелания"
+        "type": "open_link",
+        "link": "https://forms.gle/EwqUk6PNtjpVgeTUA",
+        "payload": "{\"button\": \"google\"}",
+        "label": "Предложения и пожелания"
         }
       }
     ]
