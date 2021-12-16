@@ -25,19 +25,18 @@ $ pip install -r requirements.txt
 ## Поднимаем PostgreSQL
 Рассматривается пример поднятия postgresql в докере.
 
-Для начала создаем контейрен с постгрей:
+Для начала создаем контейнер с постгрей:
 ```bash
 $ docker run -d --name some-postgres -p 5432:5432 
 -e POSTGRES_PASSWORD=mysecretpassword 
 -e PGDATA=/var/lib/postgresql/data/pgdata postgres
 ```
-Docker все установит, после чего запускаем контейнер (если не запустился, но это вряд ли, он автоматически запускает
+Docker все установит, после чего запускаем контейнер (если не запустился, но это вряд ли - он автоматически запускает
 созданный контейнер):
 ```bash
 $ docker start <container_name>  # только если не запустился контейнер, в другом случае эта команда не нужна
 $ docker exec -it <container_name> bash 
 ```
-
 Дальше нам нужно зайти в нашу базу:
 ```bash
 root@username:/# psql -U postgres
