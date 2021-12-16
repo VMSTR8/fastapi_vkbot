@@ -63,7 +63,7 @@ create database name_db owner user_name;
 ```postgresql
 \q
 ```
-Все. PostgreSQL полнята и настроена, можно делать миграции.
+Все. PostgreSQL поднята и настроена, можно делать миграции.
 ## Миграции Alembic
 Для миграций нам понадобится alembic, он уже установился с зависимостями. 
 
