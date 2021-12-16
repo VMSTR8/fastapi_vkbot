@@ -8,7 +8,8 @@
 Умеет довольно таки простенько модерировать чат. Удаляет любые сообщения участников, если их нет в white
 list или они не являются администраторами чата.
 
-Разрабатывается функционал поиска по запросу на тематических барахолках площадки vk.com
+Чат-бот умеет парсить товары на страйкбольных барахолках и складывать полученные данные в базу. Реализован функционал
+поиска для пользователй бота.
 
 Стэк: Python 3.8, FastAPi, SQLAlchemy, PostgreSQL
 ## Начало работы с проектом
@@ -21,6 +22,48 @@ $ source venv/bin/activate
 ```bash
 $ pip install -r requirements.txt
 ```
+## Поднимаем PostgreSQL
+Рассматривается пример поднятия postgresql в докере.
+
+Для начала создаем контейрен с постгрей:
+```bash
+$ docker run -d --name some-postgres -p 5432:5432 
+-e POSTGRES_PASSWORD=mysecretpassword 
+-e PGDATA=/var/lib/postgresql/data/pgdata postgres
+```
+Docker все установит, после чего запускаем контейнер (если не запустился, но это вряд ли, он автоматически запускает
+созданный контейнер):
+```bash
+$ docker run <container_name>  # только если не запустился контейнер, в другом случае эта команда не нужна
+$ docker exec -it <container_name> bash 
+```
+
+Дальше нам нужно зайти в нашу базу:
+```bash
+root@username:/# psql -U postgres
+```
+Все, молодца! Мы в постгре. Сначала зададим пароль админа:
+```postgresql
+\password postgres
+```
+Создаем и настраиваем пользователя при помощи которого будем соединяться с базой данных (ну очень плохая практика 
+все делать через ... суперпользователя). Заодно указываем значения по умолчанию для кодировки, 
+уровня изоляции транзакций и временного пояса:
+```postgresql
+create user user_name with password 'password';
+alter role user_name set client_encoding to 'utf8';
+alter role user_name set default_transaction_isolation to 'read committed';
+alter role user_name set timezone to 'UTC';
+```
+Дальше создаем базу для нашего проекта:
+```postgresql
+create database name_db owner user_name;
+```
+Выходим из консоли:
+```postgresql
+\q
+```
+Все. PostgreSQL полнята и настроена, можно делать миграции.
 ## Миграции Alembic
 Для миграций нам понадобится alembic, он уже установился с зависимостями. 
 
@@ -80,6 +123,8 @@ config.set_section_option(section, 'DB_PASSWORD', os.environ.get('DB_PASSWORD'))
 config.set_section_option(section, 'DB_HOST', os.environ.get('DB_HOST'))
 config.set_section_option(section, 'DB_NAME', os.environ.get('DB_NAME'))
 ```
+**ВАЖНО!** Не удалите случайно функции, которые прописаны в **env.py**. Без них миграции не будут выполнены.
+
 Дальше нужно сгенерировать миграции и обновить БД (поздразумевается, что вы подключили и настроили базу данных, 
 чуть позже обновлю README с инструкцией поднятия и подключения postgresql).
 ```bash
