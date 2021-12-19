@@ -1,4 +1,5 @@
 import sys
+import re
 
 from fastapi import FastAPI, Request, Depends, HTTPException
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -10,7 +11,7 @@ from vk.exceptions import VkAPIError
 
 from buttons import button, show_more
 from vkapi import is_member, keyboard_button, check_type, instant_message_delete, send_message, send_search_result
-from settings import CONFIRMATION_TOKEN, OPEN_GROUP_TOKEN, CLOSED_GROUP_TOKEN, ADMINISTRATORS, TEAM_ONLY_ANSWERS, \
+from settings.settings import CONFIRMATION_TOKEN, OPEN_GROUP_TOKEN, CLOSED_GROUP_TOKEN, ADMINISTRATORS, TEAM_ONLY_ANSWERS, \
     AUTH_TOKEN
 
 from vkbot_sql import crud, models, schemas
@@ -42,6 +43,7 @@ async def processing(vk: Request):
         peer_id = data['object']['message']['peer_id']  # get peer ID from message
         membership = await is_member(CLOSED_GROUP_TOKEN, '159016402', user_id)
         message = text.split(' ', 1)[-1]
+        message = re.sub(r'[^A-ZА-Яa-zа-я0-9\.&\s-]+', ' ', message)
         message = '&'.join(message.split())
 
         # working with chat bot out of chats
