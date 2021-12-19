@@ -2,12 +2,12 @@ import time
 
 import requests
 
-from vkbot_parser.vk_parser import AlbumsParser
+from vk_parser import AlbumsParser
 
 from vkbot_sql.crud import delete_all_items
 from get_db import get_db
 
-from settings import AUTH_TOKEN
+from settings.settings import AUTH_TOKEN
 
 app = AlbumsParser()
 
@@ -38,6 +38,6 @@ if __name__ == '__main__':
                 text = f"Что-то пошло не так. Нет ни описания, ни комментариев ¯\_(ツ)_/¯"
         write_to_db.append({"link": link, "text": text})
     for item in write_to_db:
-        requests.post(url='http://127.0.0.1:9150/add_items/', headers={'auth': AUTH_TOKEN}, json=item)
+        requests.post(url='http://127.0.0.1/add_items/', headers={'auth': AUTH_TOKEN}, json=item)
     print(f'Вхождений в базу: {len(write_to_db)}')
     print(f'Время выполнения парсинга: {time.time() - start_time} секунд')
