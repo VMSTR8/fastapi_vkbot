@@ -2,8 +2,6 @@ import json
 
 from vkbot_sql.crud import get_answer
 
-from answers import *
-
 with open('./keyboards/start_bot.json', 'r', encoding='utf-8') as start_bot_keyboard, \
         open('./keyboards/main_keyboard.json', 'r', encoding='utf-8') as main_keyboard, \
         open('./keyboards/start_menu.json', 'r', encoding='utf-8') as start_menu_keyboard, \
@@ -67,8 +65,8 @@ button = {
     'У кого играем': [get_answer('GAMES')],
     'Посещение игр': [get_answer('GAMES_COUNT')],
     'Бонусы команды': [get_answer('BONUS_MESSAGE'), bonus],
-    'Наши скидки': [get_answer('DISCOUNTS'), DISCOUNTS_NOT_IN_TEAM],
-    'Редкие ништяки': [get_answer('OTHER_COUNTRY'), OTHER_COUNTRY_NOT_IN_TEAM],
+    'Наши скидки': [get_answer('DISCOUNTS'), get_answer('DISCOUNTS_NOT_IN_TEAM')],
+    'Редкие ништяки': [get_answer('OTHER_COUNTRY'), get_answer('OTHER_COUNTRY_NOT_IN_TEAM')],
     'Другие вопросы': [get_answer('OTHER_MESSAGE'), other],
     'Ремонт приводов': [get_answer('MASTER')],
     'photo': [get_answer('WRONG_REQUEST_PHOTO'), start],
