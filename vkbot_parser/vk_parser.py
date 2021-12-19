@@ -1,8 +1,10 @@
+import sys
 from time import sleep
 
 import requests
 
-from settings import SERVICE_TOKEN, PERSONAL_TOKEN, VERSION, GROUP_IDS, RESTRICTED
+sys.path.append('/root/fastapi_vkbot')
+from settings.settings import SERVICE_TOKEN, PERSONAL_TOKEN, VERSION, GROUP_IDS, RESTRICTED
 
 
 class VKParser:
@@ -104,3 +106,7 @@ class AlbumsParser(VKParser):
                     self.offset = 0
                     break
         return all_photos
+
+
+if __name__ == '__main__':
+    pass
