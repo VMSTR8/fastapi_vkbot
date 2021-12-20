@@ -17,7 +17,7 @@ class ItemBase(BaseModel):
 
 
 class ItemCreate(BaseModel):
-    data: List[ItemBase]
+    __root__: List[ItemBase]
 
 
 class AnswerBase(BaseModel):
