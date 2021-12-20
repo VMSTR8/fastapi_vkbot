@@ -20,3 +20,6 @@ migrations/versions
 
 # env var
 .env
+
+# logs
+**.log
