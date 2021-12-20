@@ -1,5 +1,6 @@
-import sys
 import re
+import logging
+from datetime import datetime
 
 from fastapi import FastAPI, Request, Depends, HTTPException
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -17,6 +18,14 @@ from settings.settings import CONFIRMATION_TOKEN, OPEN_GROUP_TOKEN, CLOSED_GROUP
 from vkbot_sql import crud, models, schemas
 from vkbot_sql.database import engine
 from get_db import get_db
+
+from attrdict.attrdict import AttrDict
+
+log_date = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M')
+logging.basicConfig(level=logging.INFO,
+                    filename=f'{log_date}_main_bot.log',
+                    filemode='w',
+                    format='%(asctime)s - %(levelname)s: %(message)s')
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -63,7 +72,7 @@ async def processing(vk: Request):
                                                      f"Сдержание объявления:\n\n{result[0][:4000]}\n\n"
                                                      f"Ссылка: {result[1]}", keyboard=show_more)
                         except Exception as err:
-                            print(f'Ошибка в блоке user not exist: {err}')
+                            logging.error(f'Ошибка в блоке user not exist: {err}')
                             await send_message(OPEN_GROUP_TOKEN, user_id, 'Что-то пошло не так или ничего не найдено, '
                                                                           'попробуйте поискать еще раз.')
                     else:  # if user exist in dictionary
@@ -74,7 +83,7 @@ async def processing(vk: Request):
                                                      f"Сдержание объявления:\n\n{result[0][:4000]}\n\n"
                                                      f"Ссылка: {result[1]}", keyboard=show_more)
                         except Exception as err:
-                            print(f'Ошибка в блоке user exist: {err}')
+                            logging.error(f'Ошибка в блоке user exist: {err}')
                             await send_message(OPEN_GROUP_TOKEN, user_id, 'Что-то пошло не так или ничего не найдено, '
                                                                           'попробуйте поискать еще раз.')
                 else:  # if object not exist in database
@@ -90,7 +99,7 @@ async def processing(vk: Request):
                                                  f"Сдержание объявления:\n\n{result[0][:4000]}\n\n"
                                                  f"Ссылка: {result[1]}", keyboard=show_more)
                     except Exception as err:
-                        print(f'Все просмотрено, поэтому выдана ошибка: {err}')
+                        logging.error(f'Все просмотрено, поэтому выдана ошибка: {err}')
                         await send_message(OPEN_GROUP_TOKEN, user_id, 'Больше результатов нет, начните поиск заново.')
                 else:
                     # below is the main functionality of the bot
@@ -132,7 +141,7 @@ async def processing(vk: Request):
                 if user_id not in ADMINISTRATORS:
                     await instant_message_delete(OPEN_GROUP_TOKEN, peer_id, conversation_message_id)
             except VkAPIError as err_msg:
-                print(err_msg, file=sys.stderr)
+                logging.error(err_msg)
 
     return Response(content='ok')
 
@@ -143,14 +152,19 @@ def fake_main():
 
 
 @app.post('/add_items/')
-def add_item(request: Request, item: schemas.ItemBase, db: Session = Depends(get_db)):
+async def add_item(request: Request, items: schemas.ItemCreate, db: Session = Depends(get_db)):
     auth = request.headers.get('auth')
     if not auth or auth != AUTH_TOKEN:
         return HTTPException(status_code=401, detail='Access denied')
-    db_item = crud.get_item_by_link(db, link=item.link)
-    if db_item:
-        raise HTTPException(status_code=400, detail='Item link already exists')
-    return crud.create_item(db=db, item=item)
+    data = await request.json()
+    for item in data:
+        attr_dict = AttrDict(item)
+        db_item = crud.get_item_by_link(db, link=attr_dict.link)
+        if db_item:
+            logging.error(f'Item link already exists - {attr_dict.link}')
+        else:
+            crud.create_item(db=db, item=attr_dict)
+    logging.info(f'Successfully added to the database. Items: {len(data)}')
 
 
 @app.get('/add_items/', response_class=RedirectResponse, status_code=302)
