@@ -23,7 +23,7 @@ from attrdict.attrdict import AttrDict
 
 log_date = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M')
 logging.basicConfig(level=logging.INFO,
-                    filename=f'{log_date}_main_bot.log',
+                    filename=f'/var/log/bot/{log_date}_main_bot.log',
                     filemode='w',
                     format='%(asctime)s - %(levelname)s: %(message)s')
 
