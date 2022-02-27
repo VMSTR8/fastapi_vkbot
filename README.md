@@ -27,8 +27,8 @@ $ pip install -r requirements.txt
 
 Для начала создаем контейнер с постгрей:
 ```bash
-$ docker run -d --name some-postgres -p 5432:5432 
--e POSTGRES_PASSWORD=mysecretpassword 
+$ docker run -d --name some-postgres -p 5432:5432 \
+-e POSTGRES_PASSWORD=mysecretpassword \
 -e PGDATA=/var/lib/postgresql/data/pgdata postgres
 ```
 Docker все установит, после чего запускаем контейнер (если не запустился, но это вряд ли - он автоматически запускает
